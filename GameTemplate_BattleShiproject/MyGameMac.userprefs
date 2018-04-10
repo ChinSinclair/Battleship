@@ -1,0 +1,29 @@
+﻿<Properties StartupConfiguration="{871B5A90-103A-46A5-BBB9-07C02B9851D1}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="src/Model/Ship.cs">
+    <Files>
+      <File FileName="src/Model/AIHardPlayer.cs" Line="362" Column="1" />
+      <File FileName="src/Model/AIMediumPlayer.cs" Line="126" Column="2" />
+      <File FileName="src/Model/AIOption.cs" Line="25" Column="1" />
+      <File FileName="src/Model/AIPlayer.cs" Line="151" Column="1" />
+      <File FileName="src/Model/AttackResult.cs" Line="106" Column="1" />
+      <File FileName="src/Model/BattleShipsGame.cs" Line="57" Column="36" />
+      <File FileName="src/Model/Direction.cs" Line="17" Column="1" />
+      <File FileName="src/Model/ISeaGrid.cs" Line="29" Column="18" />
+      <File FileName="src/Model/Player.cs" Line="225" Column="2" />
+      <File FileName="src/Model/ResultOfAttack.cs" Line="6" Column="3" />
+      <File FileName="src/Model/SeaGrid.cs" Line="187" Column="2" />
+      <File FileName="src/Model/SeaGridAdapter.cs" Line="21" Column="4" />
+      <File FileName="src/Model/Ship.cs" Line="148" Column="1" />
+      <File FileName="src/Model/ShipName.cs" Line="12" Column="3" />
+      <File FileName="src/Model/Tile.cs" Line="130" Column="1" />
+      <File FileName="src/Model/TileView.cs" Line="7" Column="31" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug-Mac" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.MyGameMac PreferredExecutionTarget="Test1" />
+  <MultiItemStartupConfigurations />
+</Properties>
