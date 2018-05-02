@@ -33,7 +33,7 @@ Module DeploymentController
     ''' Handles user input for the Deployment phase of the game.
     ''' </summary>
     ''' <remarks>
-    ''' Involves selecting the ships, deloying ships, changing the direction
+    ''' Involves selecting the ships, deploying ships, changing the direction
     ''' of the ships to add, randomising deployment, end then ending
     ''' deployment
     ''' </remarks>
