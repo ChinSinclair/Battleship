@@ -29,11 +29,6 @@ public enum GameState
 	ViewingHighScores,
 
 	/// <summary>
-	/// Displaying game guide
-	/// </summary>
-	GameGuide,
-
-	/// <summary>
 	/// The player is altering the game settings
 	/// </summary>
 	AlteringSettings,
@@ -52,11 +47,6 @@ public enum GameState
 	/// One player has won, showing the victory screen
 	/// </summary>
 	EndingGame,
-
-	/// <summary>
-	/// Stop Background mucis
-	/// </summary>
-	MuteSound,
 
 	/// <summary>
 	/// The player has quit. Show ending credits and terminate the game
