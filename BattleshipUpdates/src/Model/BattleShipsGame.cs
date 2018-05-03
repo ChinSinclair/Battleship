@@ -186,7 +186,7 @@ public class BattleShipsGame
 	}
 
 	/// <summary>
-	/// Stop the game timer
+	/// Stop the timer for the game
 	/// </summary>
 	public void StopTimer ()
 	{
