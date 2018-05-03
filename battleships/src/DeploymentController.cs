@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using SwinGameSDK;
 
 /// <summary>
@@ -159,7 +157,7 @@ static class DeploymentController
 		foreach (ShipName sn in Enum.GetValues(typeof(ShipName)))
 		{
 			int i = 0;
-			i = Convert.ToInt32(sn) - 1;			
+			i = ((int)sn) - 1;
 			if (i >= 0)
 			{
 				if (sn == _selectedShip)
@@ -197,9 +195,10 @@ static class DeploymentController
 		foreach (ShipName sn in Enum.GetValues(typeof(ShipName)))
 		{
 			int i = 0;
-			i = Convert.ToInt32(sn) - 1;
+			i = ((int)sn) - 1;
 
-			if (UtilityFunctions.IsMouseInRectangle(SHIPS_LEFT, SHIPS_TOP + i * SHIPS_HEIGHT, SHIPS_WIDTH, SHIPS_HEIGHT)) {
+			if (UtilityFunctions.IsMouseInRectangle(SHIPS_LEFT, SHIPS_TOP + i * SHIPS_HEIGHT, SHIPS_WIDTH, SHIPS_HEIGHT))
+			{
 				return sn;
 			}
 		}
