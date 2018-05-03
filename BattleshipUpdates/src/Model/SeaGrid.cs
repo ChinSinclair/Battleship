@@ -1,16 +1,16 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 /// <summary>
 /// The SeaGrid is the grid upon which the ships are deployed.
 /// </summary>
 /// <remarks>
 /// The grid is viewable via the ISeaGrid interface as a read only
-/// grid. This can be used in conjuncture with the SeaGridAdapter to 
+/// grid. This can be used in conjuncture with the SeaGridAdapter to
 /// mask the position of the ships.
 /// </remarks>
 public class SeaGrid : ISeaGrid
@@ -19,15 +19,15 @@ public class SeaGrid : ISeaGrid
 	private const int _WIDTH = 10;
 
 	private const int _HEIGHT = 10;
-	private Tile[,] _GameTiles = new Tile[_WIDTH, _HEIGHT];
+	private Tile[,] _GameTiles;
 	private Dictionary<ShipName, Ship> _Ships;
 
 	private int _ShipsKilled = 0;
-
 	/// <summary>
 	/// The sea grid has changed and should be redrawn.
 	/// </summary>
 	public event EventHandler Changed;
+
 
 	/// <summary>
 	/// The width of the sea grid.
@@ -60,8 +60,8 @@ public class SeaGrid : ISeaGrid
 	/// <param name="x">x coordinate of the tile</param>
 	/// <param name="y">y coordiante of the tile</param>
 	/// <returns></returns>
-	public TileView this [int x, int y]{
-		get { return _GameTiles[x,y].View; }
+	public TileView this[int x, int y] {
+		get { return _GameTiles[x, y].View; }
 	}
 
 	/// <summary>
@@ -82,8 +82,9 @@ public class SeaGrid : ISeaGrid
 	/// <summary>
 	/// SeaGrid constructor, a seagrid has a number of tiles stored in an array
 	/// </summary>
-	public SeaGrid(Dictionary<ShipName, Ship> ships)
+	public SeaGrid (Dictionary<ShipName, Ship> ships)
 	{
+		_GameTiles = new Tile [Width, Height];
 		//fill array with empty Tiles
 		int i = 0;
 		for (i = 0; i <= Width - 1; i++) {
@@ -192,6 +193,83 @@ public class SeaGrid : ISeaGrid
 			return new AttackResult(ResultOfAttack.Hit, "hit something!", row, col);
 		} finally {
 			if (Changed != null) {
+				Changed(this, EventArgs.Empty);
+			}
+		}
+	}
+
+	/// <summary>
+	/// CheckTile checks the tile at the specified row and col, and whatever the
+	/// tile is checked, a result will be displayed
+	/// </summary>
+	/// <returns>An attackresult (hit, miss, sunk, shotalready)</returns>
+	/// <param name="row">The row to check</param>
+	/// <param name="col">The col to check</param>
+	public AttackResult CheckTile(int row, int col)
+	{
+		try { 
+			//tile is already hit
+			if (_GameTiles[row, col].Shot){
+				return new AttackResult(ResultOfAttack.ShotAlready, "have already attacked [" + col + "," + row + "]!", row, col);
+			}
+
+			_GameTiles[row, col].Shoot();
+
+			//There is no ship in the tile
+			if (_GameTiles[row, col].Ship == null){
+				return new AttackResult(ResultOfAttack.Miss, "Radar detect nothing!", row, col);
+			}
+
+			//else hit but not destroyed
+			return new AttackResult(ResultOfAttack.Hit, "Radar Detect Something! Automatic Missile Launched!", row, col);
+		} finally {
+			if (Changed != null)
+			{
+				Changed(this, EventArgs.Empty);
+			}
+		}
+	}
+
+	/// <summary>
+	/// ImpAIHitTile is the implementation for Impossible AI to hits a tile at a row/col, and whatever tile has been hit, a
+	/// result will be displayed.
+	/// </summary>
+	/// <returns>The AIH it tile.</returns>
+	/// <param name="row">Row.</param>
+	/// <param name="col">Col.</param>
+	public AttackResult ImpAIHitTile(int row, int col)
+	{
+		try
+		{
+			//tile is already hit
+			if (_GameTiles[row, col].Shot)
+			{
+				return new AttackResult(ResultOfAttack.ShotAlready, "have already attacked [" + col + "," + row + "]!", row, col);
+			}
+
+			_GameTiles[row, col].Shoot();
+
+			//there is no ship on the tile
+			if (_GameTiles[row, col].Ship == null)
+			{
+				return new AttackResult(ResultOfAttack.Miss, "Is Enraged!", row, col);
+			}
+
+			//all ship's tiles have been destroyed
+			if (_GameTiles[row, col].Ship.IsDestroyed)
+			{
+				_GameTiles[row, col].Shot = true;
+				_ShipsKilled += 1;
+				return new AttackResult(ResultOfAttack.Destroyed, _GameTiles[row, col].Ship, "Stopped! It's your chance!", row, col);
+			}
+
+			//else hit but not destroyed
+			return new AttackResult(ResultOfAttack.Hit, "Is Enraged!", row, col);
+		}
+		finally
+		{
+			if (Changed != null)
+			{
 				Changed(this, EventArgs.Empty);
 			}
 		}

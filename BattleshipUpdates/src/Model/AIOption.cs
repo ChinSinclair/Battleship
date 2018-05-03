@@ -1,9 +1,9 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 /// <summary>
 /// The different AI levels.
@@ -23,7 +23,12 @@ public enum AIOption
 	/// <summary>
 	/// As medium, but removes shots once it misses
 	/// </summary>
-	Hard
+	Hard,
+
+	/// <summary>
+	/// As Hard, but will keep attacking until one ship is destroyed
+	/// </summary>
+	Impossible
 }
 
 //=======================================================

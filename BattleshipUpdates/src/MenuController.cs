@@ -1,9 +1,9 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 using SwinGameSDK;
 
@@ -27,7 +27,6 @@ static class MenuController
 			"PLAY",
 			"SETUP",
 			"SCORES",
-            "GAME GUIDE",
 			"QUIT"
 		},
 		new string[] {
@@ -38,7 +37,11 @@ static class MenuController
 		new string[] {
 			"EASY",
 			"MEDIUM",
-			"HARD"
+			"HARD",
+			"IMPOSSIBLE"
+		},
+		new string[] {
+			"PAUSE"
 		}
 
 	};
@@ -57,16 +60,18 @@ static class MenuController
 	private const int MAIN_MENU_PLAY_BUTTON = 0;
 	private const int MAIN_MENU_SETUP_BUTTON = 1;
 	private const int MAIN_MENU_TOP_SCORES_BUTTON = 2;
-    private const int MAIN_MENU_GAME_GUIDE_BUTTON = 3;
 
-    private const int MAIN_MENU_QUIT_BUTTON = 4;
+	private const int MAIN_MENU_QUIT_BUTTON = 3;
 	private const int SETUP_MENU_EASY_BUTTON = 0;
 	private const int SETUP_MENU_MEDIUM_BUTTON = 1;
 	private const int SETUP_MENU_HARD_BUTTON = 2;
+	private const int SETUP_MENU_IMPOSSIBLE_BUTTON = 3;
 
 	private const int SETUP_MENU_EXIT_BUTTON = 3;
 	private const int GAME_MENU_RETURN_BUTTON = 0;
 	private const int GAME_MENU_SURRENDER_BUTTON = 1;
+
+	private const int GAME_MENU_PAUSE_BUTTON = 0;
 
 	private const int GAME_MENU_QUIT_BUTTON = 2;
 	private static readonly Color MENU_COLOR = SwinGame.RGBAColor(2, 167, 252, 255);
@@ -169,7 +174,6 @@ static class MenuController
 	{
 		//Clears the Screen to Black
 		//SwinGame.DrawText("Settings", Color.White, GameFont("ArialLarge"), 50, 50)
-
 		DrawButtons(MAIN_MENU);
 		DrawButtons(SETUP_MENU, 1, 1);
 	}
@@ -265,7 +269,7 @@ static class MenuController
 	{
 		switch (button) {
 			case MAIN_MENU_PLAY_BUTTON:
-				GameController.StartGame();
+				GameController.StartGame ();
 				break;
 			case MAIN_MENU_SETUP_BUTTON:
 				GameController.AddNewState(GameState.AlteringSettings);
@@ -273,10 +277,7 @@ static class MenuController
 			case MAIN_MENU_TOP_SCORES_BUTTON:
 				GameController.AddNewState(GameState.ViewingHighScores);
 				break;
-            case MAIN_MENU_GAME_GUIDE_BUTTON:
-                GameController.AddNewState(GameState.GameGuide);
-                break;
-            case MAIN_MENU_QUIT_BUTTON:
+			case MAIN_MENU_QUIT_BUTTON:
 				GameController.EndCurrentState();
 				break;
 		}
@@ -290,13 +291,16 @@ static class MenuController
 	{
 		switch (button) {
 			case SETUP_MENU_EASY_BUTTON:
-				GameController.SetDifficulty(AIOption.Hard);
+				GameController.SetDifficulty(AIOption.Easy);
 				break;
 			case SETUP_MENU_MEDIUM_BUTTON:
-				GameController.SetDifficulty(AIOption.Hard);
+				GameController.SetDifficulty(AIOption.Medium);
 				break;
 			case SETUP_MENU_HARD_BUTTON:
 				GameController.SetDifficulty(AIOption.Hard);
+				break;
+			case SETUP_MENU_IMPOSSIBLE_BUTTON:
+				GameController.SetDifficulty(AIOption.Impossible);
 				break;
 		}
 		//Always end state - handles exit button as well
@@ -312,9 +316,12 @@ static class MenuController
 		switch (button) {
 			case GAME_MENU_RETURN_BUTTON:
 				GameController.EndCurrentState();
+				GameController.TheGame.StopWatch.Start ();
 				break;
 			case GAME_MENU_SURRENDER_BUTTON:
 				GameController.EndCurrentState();
+				SwinGame.StopMusic ();
+				SwinGame.PlayMusic (GameResources.GameMusic ("Background"));
 				//end game menu
 				GameController.EndCurrentState();
 				//end game

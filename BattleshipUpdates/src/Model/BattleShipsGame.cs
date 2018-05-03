@@ -1,14 +1,15 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
+using SwinGameSDK;
 /// <summary>
 /// The BattleShipsGame controls a big part of the game. It will add the two players
 /// to the game and make sure that both players ships are all deployed before starting the game.
-/// It also allows players to shoot and swap turns between player. It will also check if players 
+/// It also allows players to shoot and swap turns between player. It will also check if players
 /// are destroyed.
 /// </summary>
 public class BattleShipsGame
@@ -33,6 +34,12 @@ public class BattleShipsGame
 	private Player[] _players = new Player[3];
 
 	private int _playerIndex = 0;
+
+	/// <summary>
+	/// Field declaration for timer
+	/// </summary>
+	private Stopwatch _stopWatch;
+
 	/// <summary>
 	/// The current player.
 	/// </summary>
@@ -41,6 +48,11 @@ public class BattleShipsGame
 	/// <remarks>This value will switch between the two players as they have their attacks</remarks>
 	public Player Player {
 		get { return _players[_playerIndex]; }
+	}
+
+	public Stopwatch StopWatch {
+		get { return _stopWatch; }
+		set { _stopWatch = value; }
 	}
 
 	/// <summary>
@@ -68,6 +80,7 @@ public class BattleShipsGame
 	{
 		_players[0].Enemy = new SeaGridAdapter(_players[1].PlayerGrid);
 		_players[1].Enemy = new SeaGridAdapter(_players[0].PlayerGrid);
+
 	}
 
 	/// <summary>
@@ -87,6 +100,8 @@ public class BattleShipsGame
 		//Will exit the game when all players ships are destroyed
 		if (_players[otherPlayer].IsDestroyed) {
 			newAttack = new AttackResult(ResultOfAttack.GameOver, newAttack.Ship, newAttack.Text, row, col);
+			SwinGame.StopMusic ();
+			SwinGame.PlayMusic(GameResources.GameMusic ("Background"));
 		}
 
 		if (AttackCompleted != null) {
@@ -94,13 +109,89 @@ public class BattleShipsGame
 		}
 
 		//change player if the last hit was a miss
+
 		if (newAttack.Value == ResultOfAttack.Miss) {
 			_playerIndex = otherPlayer;
 		}
 
 		return newAttack;
 	}
-}
+
+	/// <summary>
+	/// ImpAIShoot will swap between players and check if a player has been killed.
+	/// The AI's turn will finish once it destroy a ship.
+	/// </summary>
+	/// <param name="row">the row fired upon</param>
+	/// <param name="col">the column fired upon</param>
+	/// <returns>The result of the attack</returns>
+	public AttackResult ImpAIShoot(int row, int col)
+	{
+		AttackResult newAttack = default(AttackResult);
+		int otherPlayer = (_playerIndex + 1) % 2;
+
+		newAttack = Player.ImpAIShoot(row, col);
+
+		//Will exit the game when all players ships are destroyed
+		if (_players[otherPlayer].IsDestroyed)
+		{
+			newAttack = new AttackResult(ResultOfAttack.GameOver, newAttack.Ship, newAttack.Text, row, col);
+			SwinGame.StopMusic ();
+			SwinGame.PlayMusic (GameResources.GameMusic ("Background"));
+		}
+
+		if (AttackCompleted != null)
+		{
+			AttackCompleted(this, newAttack);
+		}
+
+		//change player if the last hit was a miss
+
+		if (newAttack.Value == ResultOfAttack.Destroyed)
+		{
+			_playerIndex = otherPlayer;
+		}
+
+		return newAttack;
+	}
+	/// <summary>
+	/// RadarCheck is feature that allows player to check a tile
+	/// and automatically shoot if a ship is exist. Unlike Shoot
+	/// if the player doesn't hit anything the player can still perform
+	/// the Shoot action
+	/// </summary>
+	/// <returns>The result of check</returns>
+	/// <param name="row">The row fired upon</param>
+	/// <param name="col">The column fired upon</param>
+	public AttackResult RadarCheck(int row, int col)
+	{
+		AttackResult newAttack = default(AttackResult);
+		int otherPlayer = (_playerIndex + 1) % 2;
+
+		newAttack = Player.Check(row, col);
+
+		if (AttackCompleted != null){
+			AttackCompleted(this, newAttack);
+		}
+
+		return newAttack;
+	}
+
+	/// <summary>
+	/// Start the timer for the game
+	/// </summary>
+	public void StartTimer ()
+	{
+		_stopWatch = new Stopwatch ();
+		_stopWatch.Start ();
+	}
+
+	/// <summary>
+	/// Stop the game timer
+	/// </summary>
+	public void StopTimer ()
+	{
+		_stopWatch.Stop ();	}
+	}
 
 //=======================================================
 //Service provided by Telerik (www.telerik.com)

@@ -1,10 +1,11 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
+using SwinGameSDK;
 /// <summary>
 /// Player has its own _PlayerGrid, and can see an _EnemyGrid, it can also check if
 /// all ships are deployed and if all ships are detroyed. A Player can also attach.
@@ -16,12 +17,16 @@ public class Player : IEnumerable<Ship>
 	private Dictionary<ShipName, Ship> _Ships = new Dictionary<ShipName, Ship>();
 	private SeaGrid _playerGrid;
 	private ISeaGrid _enemyGrid;
-
+	protected SeaGrid IMPEnemyGrid;
 	protected BattleShipsGame _game;
 	private int _shots;
 	private int _hits;
-
+	private bool _radar;
+	private int _radarLimit;
 	private int _misses;
+	private int win = 0;
+	private int winning = 0;
+
 	/// <summary>
 	/// Returns the game that the player is part of.
 	/// </summary>
@@ -33,6 +38,27 @@ public class Player : IEnumerable<Ship>
 	}
 
 	/// <summary>
+	/// Get/Set the value of _radar, the radar indicate
+	/// whether the player has used their radar(true) or not(false)
+	/// </summary>
+	/// <value><c>true</c> if radar; otherwise, <c>false</c>.</value>
+	public bool Radar { 
+		get { return _radar;}
+		set { _radar = value;}
+	}
+
+	/// <summary>
+	/// Get/Set the value of _radarLimit.
+	/// RadarLimit is the limit of the amount of Radar check the player can use.
+	/// The default limit is 3 and consumed by 1 for each use
+	/// </summary>
+	/// <value>The radar limit.</value>
+	public int RadarLimit { 
+		get { return _radarLimit;}
+		set { _radarLimit = value;}
+	}
+
+	/// <summary>
 	/// Sets the grid of the enemy player
 	/// </summary>
 	/// <value>The enemy's sea grid</value>
@@ -40,17 +66,20 @@ public class Player : IEnumerable<Ship>
 		set { _enemyGrid = value; }
 	}
 
+	/// <summary>
+	/// Initializes a new player for the new game
+	/// </summary>
+	/// <param name="controller">The new battleship game</param>
 	public Player(BattleShipsGame controller)
 	{
 		_game = controller;
-		_playerGrid = new SeaGrid(_Ships);
+		_playerGrid = new SeaGrid (_Ships);
 		//for each ship add the ships name so the seagrid knows about them
 		foreach (ShipName name in Enum.GetValues(typeof(ShipName))) {
 			if (name != ShipName.None) {
 				_Ships.Add(name, new Ship(name));
 			}
 		}
-
 		RandomizeDeployment();
 	}
 
@@ -61,6 +90,7 @@ public class Player : IEnumerable<Ship>
 		get { return _enemyGrid; }
 		set { _enemyGrid = value; }
 	}
+
 
 	/// <summary>
 	/// The PlayerGrid is just a normal SeaGrid where the players ships can be deployed and seen
@@ -76,8 +106,9 @@ public class Player : IEnumerable<Ship>
 		get { return _playerGrid.AllDeployed; }
 	}
 
+
 	public bool IsDestroyed {
-//Check if all ships are destroyed... -1 for the none ship
+		//Check if all ships are destroyed... -1 for the none ship
 		get { return _playerGrid.ShipsKilled == Enum.GetValues(typeof(ShipName)).Length - 1; }
 	}
 
@@ -88,12 +119,11 @@ public class Player : IEnumerable<Ship>
 	/// <value>The ship</value>
 	/// <returns>The ship with the indicated name</returns>
 	/// <remarks>The none ship returns nothing/null</remarks>
-	public Ship Ship (ShipName name){
-			if (name == ShipName.None)
-				return null;
-
+	public Ship Ship(ShipName name) {
+		if (name == ShipName.None)
+			return null;
+		else
 			return _Ships[name];
-	
 	}
 
 	/// <summary>
@@ -105,6 +135,10 @@ public class Player : IEnumerable<Ship>
 		get { return _shots; }
 	}
 
+	/// <summary>
+	/// Get the number of hits the player has taken
+	/// </summary>
+	/// <value>The hits.</value>
 	public int Hits {
 		get { return _hits; }
 	}
@@ -118,6 +152,10 @@ public class Player : IEnumerable<Ship>
 		get { return _misses; }
 	}
 
+	/// <summary>
+	/// Get the score the player achieve for the game
+	/// </summary>
+	/// <value>The score</value>
 	public int Score {
 		get {
 			if (IsDestroyed) {
@@ -171,6 +209,19 @@ public class Player : IEnumerable<Ship>
 		return null;
 	}
 
+	public virtual AttackResult ImpAIAttack() {
+		return null;
+	}
+
+	/// <summary>
+	/// Virtual Check allows the player to use radar check
+	/// </summary>
+	public virtual AttackResult Check()
+	{
+		//human does nothing here as well....
+		return null;
+	}
+
 	/// <summary>
 	/// Shoot at a given row/column
 	/// </summary>
@@ -193,9 +244,81 @@ public class Player : IEnumerable<Ship>
 				break;
 		}
 
+		if (_playerGrid.ShipsKilled > 1) {
+			if (win == 0) {
+				SwinGame.StopMusic ();
+				SwinGame.PlayMusic (GameResources.GameMusic ("deadlock"));
+			}
+			win++;
+		}
+		if (_playerGrid.ShipsKilled > 3) {
+			if (winning == 0) {
+				SwinGame.StopMusic ();
+				SwinGame.PlayMusic (GameResources.GameMusic ("final"));
+			}
+			winning++;
+		}
+
 		return result;
 	}
 
+	internal AttackResult ImpAIShoot(int row, int col)
+	{
+		_shots += 1;
+		AttackResult result = default(AttackResult);
+		result = EnemyGrid.ImpAIHitTile(row, col);
+
+		switch (result.Value)
+		{
+			case ResultOfAttack.Destroyed:
+			case ResultOfAttack.Hit:
+				_hits += 1;
+				break;
+			case ResultOfAttack.Miss:
+				_misses += 1;
+				break;
+		}
+
+		return result;
+	}
+
+	/// <summary>
+	/// Check the given row/column
+	/// </summary>
+	/// <param name="row">The row to attack</param>
+	/// <param name="col">The col to attack</param>
+	/// <returns>The result of the check</returns>
+	internal AttackResult Check(int row, int col)
+	{
+		AttackResult result = default(AttackResult);
+		if (RadarLimit == 0){
+			result = new AttackResult(ResultOfAttack.RadarUsed, "have already used all of your radar charge!", row, col);
+			return result;
+		}
+
+		else if (Radar == true){
+			result = new AttackResult(ResultOfAttack.RadarUsed, "have already used your radar for this turn!", row, col);
+			return result;
+		}
+
+		result = EnemyGrid.CheckTile(row, col);
+
+		switch (result.Value){
+			case ResultOfAttack.Destroyed:
+			case ResultOfAttack.Hit:
+				_hits += 1;
+				break;
+			case ResultOfAttack.Miss:
+				_misses += 1;
+				break;
+		}
+
+		return result;
+	}
+
+	/// <summary>
+	/// Randomize the deployment location of all ships
+	/// </summary>
 	public virtual void RandomizeDeployment()
 	{
 		bool placementSuccessful = false;

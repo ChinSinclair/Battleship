@@ -1,9 +1,9 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 
 /// <summary>
@@ -32,7 +32,7 @@ public class AIMediumPlayer : AIPlayer
 
 	/// <summary>
 	/// GenerateCoordinates should generate random shooting coordinates
-	/// only when it has not found a ship, or has destroyed a ship and 
+	/// only when it has not found a ship, or has destroyed a ship and
 	/// needs new shooting coordinates
 	/// </summary>
 	/// <param name="row">the generated row</param>

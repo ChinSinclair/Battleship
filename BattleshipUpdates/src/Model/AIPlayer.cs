@@ -1,9 +1,9 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 using SwinGameSDK;
 /// <summary>
@@ -61,8 +61,16 @@ public abstract class AIPlayer : Player
 		/// <returns>true if location 1 and location 2 are at the same spot</returns>
 		public static bool operator ==(Location @this, Location other)
 		{
-            return !ReferenceEquals(@this, null) && !ReferenceEquals(other, null) && @this.Row == other.Row && @this.Column == other.Column;
-        }
+			if (ReferenceEquals(@this, other)) {
+				return true;
+			}
+
+			if (ReferenceEquals (@this, null) || ReferenceEquals (other, null)) {
+				return false;
+			}
+
+			return @this.Row == other.Row && @this.Column == other.Column;
+		}
 
 		/// <summary>
 		/// Check if two locations are not equal
@@ -72,8 +80,9 @@ public abstract class AIPlayer : Player
 		/// <returns>true if location 1 and location 2 are not at the same spot</returns>
 		public static bool operator !=(Location @this, Location other)
 		{
-            return ReferenceEquals(@this, null) || ReferenceEquals(other, null) || @this.Row != other.Row || @this.Column != other.Column;
-        }
+			return !(@this == other);
+			//return @this == null || other == null || @this.Row != other.Row || @this.Column != other.Column;
+		}
 	}
 
 
@@ -108,7 +117,9 @@ public abstract class AIPlayer : Player
 		int column = 0;
 
 		//keep hitting until a miss
+
 		do {
+			
 			Delay();
 
 			GenerateCoords(ref row, ref column);
@@ -117,6 +128,50 @@ public abstract class AIPlayer : Player
 			//take shot
 			ProcessShot(row, column, result);
 		} while (result.Value != ResultOfAttack.Miss && result.Value != ResultOfAttack.GameOver && !SwinGame.WindowCloseRequested());
+
+		return result;
+	}
+
+	/// <summary>
+	/// The IMPOSSIBLE AI takes its attacks until it destroy a ship.
+	/// </summary>
+	/// <returns>The result of the last attack</returns>
+	public override AttackResult ImpAIAttack()
+	{
+		AttackResult result = default(AttackResult);
+		int row = 0;
+		int column = 0;
+
+		//keep hitting until a ship is destroyed
+		do
+		{
+			SwinGame.Delay(200);
+			GenerateCoords(ref row, ref column);
+			//generate coordinates for shot
+			result = _game.ImpAIShoot(row, column);
+			//take shot
+			ProcessShot(row, column, result);
+		} while (result.Value != ResultOfAttack.Destroyed && result.Value != ResultOfAttack.Miss && result.Value != ResultOfAttack.GameOver && !SwinGame.WindowCloseRequested());
+
+		return result;
+	}
+
+	/// <summary>
+	/// The AI Uses the Radar Check feature, only for Hard Difficulty Ai
+	/// </summary>
+	/// <returns>The result of the check</returns>
+	public override AttackResult Check()
+	{
+		AttackResult result = default(AttackResult);
+		int row = 0;
+		int column = 0;
+
+		Delay();
+		GenerateCoords(ref row, ref column);
+		//generate coordinates for shot
+		result = _game.RadarCheck(row, column);
+		//take shot
+		ProcessShot(row, column, result);
 
 		return result;
 	}
@@ -134,7 +189,7 @@ public abstract class AIPlayer : Player
 
 			SwinGame.Delay(5);
 			SwinGame.ProcessEvents();
-			SwinGame.RefreshScreen();
+			//SwinGame.RefreshScreen();
 		}
 	}
 }

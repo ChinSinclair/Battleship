@@ -1,9 +1,9 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 /// <summary>
 /// The result of an attack.
@@ -19,6 +19,16 @@ public enum ResultOfAttack
 	/// The player missed
 	/// </summary>
 	Miss,
+
+	/// <summary>
+	/// The player already used the radar
+	/// </summary>
+	RadarUsed,
+
+	/// <summary>
+	/// The player has already used all the radar charge
+	/// </summary>
+	LimitReached,
 
 	/// <summary>
 	/// The player destroyed a ship

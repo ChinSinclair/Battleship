@@ -1,9 +1,9 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 using SwinGameSDK;
 /// <summary>
@@ -135,9 +135,11 @@ static class UtilityFunctions
 				draw = true;
 
 				switch (grid[row, col]) {
+					/*
 					case TileView.Ship:
 						draw = false;
 						break;
+					*/
 					//If small Then fillColor = _SMALL_SHIP Else fillColor = _LARGE_SHIP
 					case TileView.Miss:
 						if (small)
@@ -152,6 +154,8 @@ static class UtilityFunctions
 							fillColor = LARGE_HIT;
 						break;
 					case TileView.Sea:
+						
+					case TileView.Ship:
 						if (small)
 							fillColor = SMALL_SEA;
 						else
@@ -243,30 +247,7 @@ static class UtilityFunctions
 			case GameState.Deploying:
 				SwinGame.DrawBitmap(GameResources.GameImage("Deploy"), 0, 0);
 				break;
-            case GameState.GameGuide:
-                SwinGame.DrawBitmap(GameResources.GameImage("Menu"), 0, 0);
-                SwinGame.DrawText("GAME GUIDE : BATTLESHIP", Color.Yellow, GameResources.GameFont("Courier"), 0, 10);
-                SwinGame.DrawText(">>DIFFICULTY", Color.Yellow, GameResources.GameFont("Courier"), 0, 40);
-                SwinGame.DrawText("You can choose between 3 difficulties EASY,MEDIUM,HARD", Color.Yellow, GameResources.GameFont("Courier"), 0, 50);
-                SwinGame.DrawText(">>HIGH SCORES", Color.Yellow, GameResources.GameFont("Courier"), 0, 70);
-                SwinGame.DrawText("To view high score click on the score button in main menu", Color.Yellow, GameResources.GameFont("Courier"), 0, 80);
-                SwinGame.DrawText(">>OBJECTIVE", Color.Yellow, GameResources.GameFont("Courier"), 0, 100);
-                SwinGame.DrawText("Destroy the opponent's ships", Color.Yellow, GameResources.GameFont("Courier"), 0, 110);
-                SwinGame.DrawText(">>CALCULATION OF SCORE", Color.Yellow, GameResources.GameFont("Courier"), 0, 130);
-                SwinGame.DrawText("Each time the player hits the opponent's ship, 1 point will be given", Color.Yellow, GameResources.GameFont("Courier"), 0, 140);
-                SwinGame.DrawText(">>PREPARING FOR GAME", Color.Yellow, GameResources.GameFont("Courier"), 0, 160);
-                SwinGame.DrawText("You can add ships in the grid on your own or you can click on randomize button", Color.Yellow, GameResources.GameFont("Courier"), 0, 170);
-                SwinGame.DrawText(">>UPDATES", Color.Red, GameResources.GameFont("Courier"), 0, 190);
-                SwinGame.DrawText("Added a list of enemy's ship in gameplay screen", Color.White, GameResources.GameFont("Courier"), 0, 200);
-                SwinGame.DrawText("Added a mute button in gameplay screen", Color.White, GameResources.GameFont("Courier"), 0, 210);
-                SwinGame.DrawText("Added a timer to gameplay screen", Color.White, GameResources.GameFont("Courier"), 0, 220);
-                if (SwinGame.KeyTyped(KeyCode.vk_ESCAPE))
-                {
-                    GameController.EndCurrentState();
-                }
-                break;
-
-            default:
+			default:
 				SwinGame.ClearScreen();
 				break;
 		}

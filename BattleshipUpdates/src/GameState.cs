@@ -1,9 +1,9 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 /// <summary>
 /// The GameStates represent the state of the Battleships game play.
@@ -28,11 +28,6 @@ public enum GameState
 	/// </summary>
 	ViewingHighScores,
 
-    // 
-    // Displaying game guide
-    //
-    GameGuide,
-
 	/// <summary>
 	/// The player is altering the game settings
 	/// </summary>
@@ -52,11 +47,6 @@ public enum GameState
 	/// One player has won, showing the victory screen
 	/// </summary>
 	EndingGame,
-
-    //
-    // Stop Background music
-    //
-    MuteSound,
 
 	/// <summary>
 	/// The player has quit. Show ending credits and terminate the game

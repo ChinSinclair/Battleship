@@ -1,9 +1,9 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 /// <summary>
 /// A Ship has all the details about itself. For example the shipname,
@@ -80,7 +80,7 @@ public class Ship
 		_tiles = new List<Tile>();
 
 		//gets the ship size from the enumarator
-		_sizeOfShip = (int)_shipName;
+		_sizeOfShip = (int) _shipName;
 	}
 
 	/// <summary>
@@ -131,6 +131,16 @@ public class Ship
 		_row = row;
 		_col = col;
 		_direction = direction;
+	}
+
+	public string ShipImage { 
+		get {
+			if (_direction == Direction.LeftRight) {
+				return "ShipLR" + _sizeOfShip;
+			} else {
+				return "ShipUD" + _sizeOfShip;
+			}
+		}
 	}
 }
 

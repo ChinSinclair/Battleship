@@ -1,12 +1,12 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 /// <summary>
-/// Tile knows its location on the grid, if it is a ship and if it has been 
+/// Tile knows its location on the grid, if it is a ship and if it has been
 /// shot before
 /// </summary>
 public class Tile
@@ -128,6 +128,12 @@ public class Tile
 			throw new ApplicationException("You have already shot this square");
 		}
 	}
+
+	/// <summary>
+	/// Check allows a tile to be checked, if the tile has been hit before
+	/// it will give an error
+	/// </summary>
+
 }
 
 //=======================================================

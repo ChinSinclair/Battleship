@@ -1,9 +1,9 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 /// <summary>
 /// AttackResult gives the result after a shot has been made.
@@ -92,6 +92,15 @@ public class AttackResult
 		}
 
 		return Text + " " + _Ship.Name;
+	}
+
+	/// <summary>
+	/// Display the textual information about the attack done by IMPOSSIBLE AI
+	/// </summary>
+	/// <returns>The information about the attack</returns>
+	public string ImpAIToString()
+	{
+		return Text;
 	}
 }
 

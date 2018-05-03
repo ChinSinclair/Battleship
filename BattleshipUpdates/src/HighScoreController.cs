@@ -1,9 +1,9 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 using System.IO;
 using SwinGameSDK;
@@ -54,7 +54,7 @@ static class HighScoreController
 	/// The format is
 	/// # of scores
 	/// NNNSSS
-	/// 
+	///
 	/// Where NNN is the name and SSS is the score
 	/// </remarks>
 	private static void LoadScores()
@@ -93,7 +93,7 @@ static class HighScoreController
 	/// The format is
 	/// # of scores
 	/// NNNSSS
-	/// 
+	///
 	/// Where NNN is the name and SSS is the score
 	/// </remarks>
 	private static void SaveScores()
@@ -141,6 +141,8 @@ static class HighScoreController
 				SwinGame.DrawText(i + 1 + ":   " + s.Name + "   " + s.Value, Color.White, GameResources.GameFont("Courier"), SCORES_LEFT, SCORES_TOP + i * SCORE_GAP);
 			}
 		}
+		SaveScores ();
+
 	}
 
 	/// <summary>
@@ -199,6 +201,8 @@ static class HighScoreController
 			_Scores.RemoveAt(_Scores.Count - 1);
 			_Scores.Add(s);
 			_Scores.Sort();
+
+			SaveScores ();
 
 			GameController.EndCurrentState();
 		}

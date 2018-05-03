@@ -1,12 +1,11 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 using SwinGameSDK;
-
 static class GameLogic
 {
 	public static void Main()
@@ -20,8 +19,10 @@ static class GameLogic
 		SwinGame.PlayMusic(GameResources.GameMusic("Background"));
 
 		//Game Loop
-		do
-		{
+		do {
+			if (SwinGame.KeyDown(KeyCode.vk_LCTRL) && SwinGame.KeyTyped(KeyCode.vk_RETURN) || SwinGame.KeyDown(KeyCode.vk_RCTRL) && SwinGame.KeyTyped(KeyCode.vk_RETURN))
+					SwinGame.ToggleFullScreen ();
+
 			GameController.HandleUserInput();
 			GameController.DrawScreen();
 		} while (!(SwinGame.WindowCloseRequested() == true | GameController.CurrentState == GameState.Quitting));

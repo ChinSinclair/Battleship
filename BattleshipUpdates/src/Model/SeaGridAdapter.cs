@@ -1,9 +1,9 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 /// <summary>
 /// The SeaGridAdapter allows for the change in a sea grid view. Whenever a ship is
@@ -44,7 +44,7 @@ public class SeaGridAdapter : ISeaGrid
 	/// <param name="x">tile x coordinate</param>
 	/// <param name="y">tile y coordinate</param>
 	/// <returns>a tile, either what it actually is, or if it was a ship then return a sea tile</returns>
-	public TileView this [int x, int y] {
+	public TileView this[int x, int y] {
 		get {
 			TileView result = _MyGrid[x, y];
 
@@ -85,8 +85,29 @@ public class SeaGridAdapter : ISeaGrid
 	{
 		return _MyGrid.HitTile(row, col);
 	}
+
+	/// <summary>
+	/// CheckTile calls _MyGrid to check a tile at the selected row and col
+	/// </summary>
+	/// <returns>The result of hitting that tile</returns>
+	/// <param name="row">Row it is hitting at</param>
+	/// <param name="col">Col it is hitting at</param>
+	public AttackResult CheckTile(int row, int col)
+	{
+		return _MyGrid.CheckTile(row, col);
+	}
 	#endregion
 
+	/// <summary>
+	/// ImpAiHitTile is the impossible AI implementation for HitTile.
+	/// </summary>
+	/// <returns>The result of hitting that tile</returns>
+	/// <param name="row">Row it is hitting at</param>
+	/// <param name="col">Col it is hitting at</param>
+	public AttackResult ImpAIHitTile(int row, int col)
+	{
+		return _MyGrid.ImpAIHitTile(row, col);
+	}
 }
 
 //=======================================================

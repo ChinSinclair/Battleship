@@ -1,8 +1,9 @@
-using Microsoft.VisualBasic;
+
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 using SwinGameSDK;
 
@@ -28,8 +29,7 @@ public static class GameController
 	/// </summary>
 	/// <value>The current state</value>
 	/// <returns>The current state</returns>
-	public static GameState CurrentState
-	{
+	public static GameState CurrentState {
 		get { return _state.Peek(); }
 	}
 
@@ -38,9 +38,12 @@ public static class GameController
 	/// </summary>
 	/// <value>the human player</value>
 	/// <returns>the human player</returns>
-	public static Player HumanPlayer
-	{
+	public static Player HumanPlayer {
 		get { return _human; }
+	}
+
+	public static BattleShipsGame TheGame {
+		get { return _theGame; }
 	}
 
 	/// <summary>
@@ -48,11 +51,11 @@ public static class GameController
 	/// </summary>
 	/// <value>the computer player</value>
 	/// <returns>the conputer player</returns>
-	public static Player ComputerPlayer
-	{
+	public static Player ComputerPlayer {
 		get { return _ai; }
 	}
 
+	//public GameController()
 	static GameController()
 	{
 		//bottom state will be quitting. If player exits main menu then the game is over
@@ -77,21 +80,27 @@ public static class GameController
 		_theGame = new BattleShipsGame();
 
 		//create the players
-		switch (_aiSetting)
-		{
+		switch (_aiSetting) {
+			case AIOption.Easy:
+				_ai = new AIEasyPlayer (_theGame);
+				break;
 			case AIOption.Medium:
 				_ai = new AIMediumPlayer(_theGame);
 				break;
 			case AIOption.Hard:
 				_ai = new AIHardPlayer(_theGame);
 				break;
+			case AIOption.Impossible:
+				_ai = new AIMpossiblePlayer(_theGame);
+				break;
 			default:
-				_ai = new AIHardPlayer(_theGame);
+				_ai = new AIEasyPlayer(_theGame);
 				break;
 		}
 
 		_human = new Player(_theGame);
-
+		_human.RadarLimit = 3;
+		_ai.RadarLimit = 3;
 		//AddHandler _human.PlayerGrid.Changed, AddressOf GridChanged
 		_ai.PlayerGrid.Changed += GridChanged;
 		_theGame.AttackCompleted += AttackCompleted;
@@ -124,8 +133,7 @@ public static class GameController
 
 	private static void PlayHitSequence(int row, int column, bool showAnimation)
 	{
-		if (showAnimation)
-		{
+		if (showAnimation) {
 			UtilityFunctions.AddExplosion(row, column);
 		}
 
@@ -136,8 +144,7 @@ public static class GameController
 
 	private static void PlayMissSequence(int row, int column, bool showAnimation)
 	{
-		if (showAnimation)
-		{
+		if (showAnimation) {
 			UtilityFunctions.AddSplash(row, column);
 		}
 
@@ -159,36 +166,34 @@ public static class GameController
 		bool isHuman = false;
 		isHuman = object.ReferenceEquals(_theGame.Player, HumanPlayer);
 
-		if (isHuman)
-		{
+		if (isHuman) {
 			UtilityFunctions.Message = "You " + result.ToString();
-		}
-		else {
-			UtilityFunctions.Message = "The AI " + result.ToString();
+		} else {
+			if (_aiSetting == AIOption.Impossible){
+				UtilityFunctions.Message = "The AI " + result.ImpAIToString();
+			}
+			else {
+				UtilityFunctions.Message = "The AI " + result.ToString();
+			}
 		}
 
-		switch (result.Value)
-		{
+		switch (result.Value) {
 			case ResultOfAttack.Destroyed:
 				PlayHitSequence(result.Row, result.Column, isHuman);
 				Audio.PlaySoundEffect(GameResources.GameSound("Sink"));
-
 				break;
 			case ResultOfAttack.GameOver:
 				PlayHitSequence(result.Row, result.Column, isHuman);
 				Audio.PlaySoundEffect(GameResources.GameSound("Sink"));
 
-				while (Audio.SoundEffectPlaying("Sink"))
-				{
+				while (Audio.SoundEffectPlaying(GameResources.GameSound("Sink"))) {
 					SwinGame.Delay(10);
 					SwinGame.RefreshScreen();
 				}
 
-				if (_human.IsDestroyed)
-				{
+				if (HumanPlayer.IsDestroyed) {
 					Audio.PlaySoundEffect(GameResources.GameSound("Lose"));
-				}
-				else {
+				} else {
 					Audio.PlaySoundEffect(GameResources.GameSound("Winner"));
 				}
 
@@ -235,6 +240,14 @@ public static class GameController
 		AttackResult result = default(AttackResult);
 		result = _theGame.Shoot(row, col);
 		CheckAttackResult(result);
+		_ai.Radar = false;
+	}
+
+	public static void Check(int row, int col)
+	{
+		AttackResult result = default(AttackResult);
+		result = _theGame.RadarCheck(row, col);
+		CheckRadarResult(result, _human);
 	}
 
 	/// <summary>
@@ -246,8 +259,22 @@ public static class GameController
 	private static void AIAttack()
 	{
 		AttackResult result = default(AttackResult);
-		result = _theGame.Player.Attack();
+		if (_aiSetting == AIOption.Impossible){
+			result = _theGame.Player.ImpAIAttack();
+		}
+		else {
+			result = _theGame.Player.Attack();
+		}
 		CheckAttackResult(result);
+		_human.Radar = false;
+	}
+
+
+	private static void AICheck()
+	{
+		AttackResult result = default(AttackResult);
+		result = _theGame.Player.Check();
+		CheckRadarResult(result, _ai);
 	}
 
 	/// <summary>
@@ -260,14 +287,31 @@ public static class GameController
 	/// to the AI player.</remarks>
 	private static void CheckAttackResult(AttackResult result)
 	{
-		switch (result.Value)
-		{
+		switch (result.Value) {
 			case ResultOfAttack.Miss:
-				if (object.ReferenceEquals(_theGame.Player, ComputerPlayer))
+				if (object.ReferenceEquals(_theGame.Player, ComputerPlayer)){
+					if (_aiSetting == AIOption.Hard && _ai.RadarLimit != 0) {
+						AICheck();
+					}
 					AIAttack();
+				}
 				break;
 			case ResultOfAttack.GameOver:
 				SwitchState(GameState.EndingGame);
+				break;
+		}
+	}
+
+	private static void CheckRadarResult(AttackResult result, Player gamePlayer)
+	{
+		switch (result.Value){
+			case ResultOfAttack.Miss:
+				gamePlayer.Radar = true;
+				gamePlayer.RadarLimit--;
+				break;
+			case ResultOfAttack.Hit:
+				gamePlayer.Radar = true;
+				gamePlayer.RadarLimit--;
 				break;
 		}
 	}
@@ -285,8 +329,7 @@ public static class GameController
 		//Read incoming input events
 		SwinGame.ProcessEvents();
 
-		switch (CurrentState)
-		{
+		switch (CurrentState) {
 			case GameState.ViewingMainMenu:
 				MenuController.HandleMainMenuInput();
 				break;
@@ -323,8 +366,7 @@ public static class GameController
 	{
 		UtilityFunctions.DrawBackground();
 
-		switch (CurrentState)
-		{
+		switch (CurrentState) {
 			case GameState.ViewingMainMenu:
 				MenuController.DrawMainMenu();
 				break;

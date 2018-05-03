@@ -1,9 +1,9 @@
 
-using Microsoft.VisualBasic;
+//using Microsoft.VisualBasic;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+//using System.Data;
 using System.Diagnostics;
 using SwinGameSDK;
 
@@ -16,6 +16,10 @@ public static class GameResources
 		NewFont("Courier", "cour.ttf", 14);
 		NewFont("CourierSmall", "cour.ttf", 8);
 		NewFont("Menu", "ffaccess.ttf", 8);
+        NewFont ("Time", "cour.ttf", 35);
+        NewFont ("Score", "ffaccess.ttf", 12);
+        NewFont ("Message", "ffaccess.ttf", 60);
+        NewFont ("Result", "ffaccess.ttf", 20);
 	}
 
 	private static void LoadImages()
@@ -59,6 +63,8 @@ public static class GameResources
 	private static void LoadMusic()
 	{
 		NewMusic("Background", "horrordrone.mp3");
+		NewMusic ("deadlock", "deadlock.mp3");
+		NewMusic ("final", "final.mp3");
 	}
 
 	/// <summary>
@@ -267,13 +273,15 @@ public static class GameResources
 
 	private static void FreeFonts()
 	{
+		//Font obj = default(Font);
 		foreach (Font obj in _Fonts.Values) {
-		SwinGame.FreeFont(obj);
+			SwinGame.FreeFont(obj);
 		}
 	}
 
 	private static void FreeImages()
 	{
+		//Bitmap obj = default(Bitmap);
 		foreach (Bitmap obj in _Images.Values) {
 			SwinGame.FreeBitmap(obj);
 		}
@@ -281,6 +289,7 @@ public static class GameResources
 
 	private static void FreeSounds()
 	{
+		//SoundEffect obj = default(SoundEffect);
 		foreach (SoundEffect obj in _Sounds.Values) {
 			Audio.FreeSoundEffect(obj);
 		}
@@ -288,6 +297,7 @@ public static class GameResources
 
 	private static void FreeMusic()
 	{
+		//Music obj = default(Music);
 		foreach (Music obj in _Music.Values) {
 			Audio.FreeMusic(obj);
 		}
